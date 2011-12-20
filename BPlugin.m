@@ -69,7 +69,7 @@ static NSInteger discoveryOrderCounter = 0;
 		requirements = [[NSMutableArray alloc] init];
 		extensionPoints = [[NSMutableArray alloc] init];
 		extensions = [[NSMutableArray alloc] init];
-		
+
 		if (![self loadPluginXML]) {
 			BLogError([NSString stringWithFormat:@"failed loadPluginXML for bundle %@", [bundle bundleIdentifier]]);
 			return nil;
@@ -132,7 +132,7 @@ static NSInteger discoveryOrderCounter = 0;
 				}
 //			}
 		}
-								
+
 		if ([self.bundle loadAndReturnError:error]) {
 			BLogInfo([NSString stringWithFormat:@"Loaded plugin %@", self.identifier]);
 		} else {
@@ -140,7 +140,7 @@ static NSInteger discoveryOrderCounter = 0;
 			return NO;
 		}
 	}
-	
+
 	return YES;
 }
 
@@ -149,15 +149,15 @@ static NSInteger discoveryOrderCounter = 0;
 - (Class)classNamed:(NSString *)className {
 	NSError *error = nil;
 	Class result = nil;
-	
+
 	if ([self loadAndReturnError:&error]) {
 		result = [self.bundle classNamed:className];
 	}
-	
+
 	if (!result) {
 		result = NSClassFromString(className);
 	}
-	
+
 	return result;
 }
 
@@ -167,13 +167,13 @@ static NSInteger discoveryOrderCounter = 0;
 - (NSImage *)imageNamed:(NSString *)imageName {
 	NSString *imageNamePluginUniqueName = [NSString stringWithFormat:@"%@.%@", self.identifier, imageName];
 	NSImage *image = [NSImage imageNamed:imageNamePluginUniqueName];
-	
+
 	if (!image) {
 		image = [[NSImage alloc] initWithContentsOfFile:[self.bundle pathForImageResource:imageName]];
 		[image setName:imageNamePluginUniqueName];
 	}
-	
-    return image;	
+
+    return image;
 }
 
 /*
@@ -184,14 +184,14 @@ static NSInteger discoveryOrderCounter = 0;
 		string = [string substringFromIndex:1];
 		NSString *keyNotFoundMarker = @"BKeyNotFound";
 		NSString *localizedString = [[NSBundle mainBundle] localizedStringForKey:string value:keyNotFoundMarker table:@"PluginXml"];
-		
+
 		if ([keyNotFoundMarker isEqualToString:localizedString]) {
-			string = [self.bundle localizedStringForKey:string value:@"" table:@"PluginXml"];	
+			string = [self.bundle localizedStringForKey:string value:@"" table:@"PluginXml"];
 		} else {
 			string = localizedString;
 		}
 	}
-	
+
 	return string;
 }
 
@@ -204,28 +204,28 @@ static NSInteger discoveryOrderCounter = 0;
 	NSString *xmlPath = [bundle pathForResource:@"Plugin" ofType:@"xml"];
 	NSData *xmlData = [NSData dataWithContentsOfFile:xmlPath];
 	NSXMLDocument *document = xmlData != nil ?[[NSXMLDocument alloc] initWithData:xmlData options:0 error:&error] : nil;
-	
+
 	if (!document) {
 		BLogError([NSString stringWithFormat:@"failed to load Plugin.xml resource for bundle %@ with error %@", bundle, error]);
 		return NO;
 	}
-	
+
 //	[document setDTD:[BPlugin pluginDTD]];
 //	if (![document validateAndReturnError:&error]) {
 //		BLogError([NSString stringWithFormat:@"failed to validate Plugin.xml resource for bundle %@ with error %@", bundle, error]);
 //	}
-	
+
 	NSXMLElement *rootElement = [document rootElement];
-	
+
 	label = [[rootElement attributeForName:@"label"] objectValue];
 	version = [[rootElement attributeForName:@"version"] objectValue];
-	identifier = [[rootElement attributeForName:@"id"] objectValue];	
+	identifier = [[rootElement attributeForName:@"id"] objectValue];
 
 	if (!version || [[version componentsSeparatedByString:@"."] count] != 3) {
 		BLogError([NSString stringWithFormat:@"failed to load Plugin.xml resource for bundle %@ because plugins version number isn't present or doesn't conform to #.#.#", bundle]);
 		return NO;
 	}
-	
+
 	for (NSXMLElement *each in [rootElement elementsForName:@"requirement"]) {
 		BRequirement *requirement = [[BRequirement alloc] initWithPlugin:self xmlElement:each];
 		if (!requirement.version || [[requirement.version componentsSeparatedByString:@"."] count] != 3) {
@@ -234,7 +234,7 @@ static NSInteger discoveryOrderCounter = 0;
 		}
 		[requirements addObject:requirement];
 	}
-	
+
 	for (NSXMLElement *each in [rootElement elementsForName:@"extension-point"]) {
 		[extensionPoints addObject:[[BExtensionPoint alloc] initWithPlugin:self xmlElement:each]];
 	}
@@ -242,7 +242,7 @@ static NSInteger discoveryOrderCounter = 0;
 	for (NSXMLElement *each in [rootElement elementsForName:@"extension"]) {
 		[extensions addObject:[[BExtension alloc] initWithPlugin:self xmlElement:each]];
 	}
-		
+
     return YES;
 }
 
@@ -280,21 +280,21 @@ static NSInteger discoveryOrderCounter = 0;
 	if (self = [super init]) {
 		plugin = aPlugin;
 		label = [[xmlElement attributeForName:@"label"] objectValue];
-		
+
 		NSString *processOrderString = [[xmlElement attributeForName:@"processOrder"] stringValue];
 		if (processOrderString) {
 			processOrder = [processOrderString doubleValue];
 		}
 
 		extensionPointUniqueIdentifier = [[xmlElement attributeForName:@"point"] objectValue];
-		
+
 		NSArray *elementChildren = [xmlElement children];
 		NSUInteger count = [elementChildren count];
-		
+
 		if (count > 0) {
 			configurationElements = [[NSMutableArray alloc] initWithCapacity:count];
 			NSUInteger i = 0;
-			
+
 			while (i < count) {
 				[configurationElements addObject:[[BConfigurationElement alloc] initWithExtension:self parent:nil xmlElement:[elementChildren objectAtIndex:i]]];
 				i++;
@@ -315,28 +315,28 @@ static NSInteger discoveryOrderCounter = 0;
 		parent = aParent;
 		name = [xmlElement name];
 		value = [xmlElement objectValue];
-			
+
 		NSArray *xmlElementAttributes = [xmlElement attributes];
 		NSUInteger count = [xmlElementAttributes count];
 
 		if (count > 0) {
 			attributes = [[NSMutableDictionary alloc] initWithCapacity:count];
 			NSUInteger i = 0;
-			
+
 			while (i < count) {
 				NSXMLNode *eachNode = [xmlElementAttributes objectAtIndex:i];
 				[attributes setObject:[eachNode objectValue] forKey:[eachNode name]];
 				i++;
 			}
 		}
-		
+
 		NSArray *elementChildren = [xmlElement children];
 		count = [elementChildren count];
-		
+
 		if (count > 0) {
 			children = [[NSMutableArray alloc] initWithCapacity:count];
 			NSUInteger i = 0;
-			
+
 			while (i < count) {
 				[children addObject:[[BConfigurationElement alloc] initWithExtension:extension parent:self xmlElement:[elementChildren objectAtIndex:i]]];
 				i++;

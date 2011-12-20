@@ -9,7 +9,7 @@
 #import <Cocoa/Cocoa.h>
 #import <syslog.h>
 
-/* 
+/*
  * Logging levels from syslog.h
  *
  * priorities/facilities are encoded into a single 32-bit quantity, where the

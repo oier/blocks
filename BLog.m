@@ -56,7 +56,7 @@ static NSUInteger LoggingLevel = LOG_WARNING;
 	va_list args;
 	va_start(args, message);
 	[self logWithLevel:LOG_ERR lineNumber:lineNumber fileName:fileName function:functionName format:message arguments:(va_list)args];
-	va_end(args);	
+	va_end(args);
 }
 
 + (void)assert:(BOOL)assertion lineNumber:(NSInteger)lineNumber fileName:(char *)fileName function:(char *)functionName message:(NSString *)message, ... {
@@ -71,21 +71,21 @@ static NSUInteger LoggingLevel = LOG_WARNING;
 // From http://code.google.com/p/ilcrashreporter-ng/
 + (NSString*)gatherConsoleLogFromDate:(NSDate*)date {
 	aslmsg query = asl_new(ASL_TYPE_QUERY);
-	
+
 	if(query == NULL) return nil;
-	
+
 	const uint32_t senderQueryOptions = ASL_QUERY_OP_EQUAL|ASL_QUERY_OP_CASEFOLD|ASL_QUERY_OP_SUBSTRING;
 	const int aslSetSenderQueryReturnCode = asl_set_query(query, ASL_KEY_SENDER, [[[NSProcessInfo processInfo] processName] UTF8String], senderQueryOptions);
 	if(aslSetSenderQueryReturnCode != 0) return nil;
-	
+
 	static const size_t timeBufferLength = 64;
 	char oneHourAgo[timeBufferLength];
 	snprintf(oneHourAgo, timeBufferLength, "%0lf", [date timeIntervalSince1970]);
 	const int aslSetTimeQueryReturnCode = asl_set_query(query, ASL_KEY_TIME, oneHourAgo, ASL_QUERY_OP_GREATER_EQUAL);
 	if(aslSetTimeQueryReturnCode != 0) return nil;
-	
+
 	aslresponse response = asl_search(NULL, query);
-	
+
 	NSMutableString* searchResults = [NSMutableString string];
 
 	for(;;) {
@@ -100,9 +100,9 @@ static NSUInteger LoggingLevel = LOG_WARNING;
 		NSCalendarDate* date = [NSCalendarDate dateWithTimeIntervalSince1970:atof(time)];
 		[searchResults appendFormat:@"%@[%s]: %s\n", [date description], level, messageText];
 	}
-	
+
 	aslresponse_free(response);
-	
+
 	return searchResults;
 }
 

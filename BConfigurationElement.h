@@ -14,7 +14,7 @@
 
 /*
  * Configuration elements are used to instantiate objects extending from a particular extension point.
- * A configuration element, with its attributes and children, directly reflects the content 
+ * A configuration element, with its attributes and children, directly reflects the content
  * and structure of the extension section within the declaring plug-in's manifest (Plugin.xml) file.
  */
 @interface BConfigurationElement : NSObject {

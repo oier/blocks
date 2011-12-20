@@ -73,7 +73,7 @@
 			}
 		}
 	}
-	
+
 	for (BConfigurationElement *each in [self configurationElementsFor:@"com.blocks.Blocks.main"]) {
 		[each createExecutableExtensionFromAttribute:@"class"];
 	}
@@ -99,19 +99,19 @@
 	return [extensionPointIDsToExtensions objectForKey:extensionPointID];
 }
 
-- (NSArray *)configurationElementsFor:(NSString *)extensionPointID {	
+- (NSArray *)configurationElementsFor:(NSString *)extensionPointID {
 	NSMutableArray *configurationElements = [extensionPointIDsToConfigurationElements objectForKey:extensionPointID];
 
 	if (!configurationElements) {
 		configurationElements = [NSMutableArray array];
-		
+
 		for (BExtension *each in [self extensionsFor:extensionPointID]) {
 			[configurationElements addObjectsFromArray:[each configurationElements]];
 		}
 
 		[extensionPointIDsToConfigurationElements setObject:configurationElements forKey:extensionPointID];
 	}
-	
+
 	return configurationElements;
 }
 
@@ -125,26 +125,26 @@
 	mainBundlePlugin = [[BPlugin alloc] initWithBundle:[NSBundle mainBundle]];
     [self registerPlugin:mainBundlePlugin];
     [self registerPlugin:[[BPlugin alloc] initWithBundle:[NSBundle bundleForClass:[self class]]]];
-	
+
     NSFileManager *fileManager = [NSFileManager defaultManager];
     NSMutableArray *pluginSearchPaths = [[self pluginSearchPaths] mutableCopy];
     NSString *eachSearchPath;
-	
+
 	while (eachSearchPath = [pluginSearchPaths lastObject]) {
 		[pluginSearchPaths removeLastObject];
-		
+
 		NSDirectoryEnumerator *directoryEnumerator = [fileManager enumeratorAtPath:eachSearchPath];
 		NSString* eachPath;
-		
+
 		while (eachPath = [directoryEnumerator nextObject]) {
 			if ([[eachPath pathExtension] caseInsensitiveCompare:@"plugin"] == NSOrderedSame) {
 				[directoryEnumerator skipDescendents];
-				
+
 				eachPath = [eachSearchPath stringByAppendingPathComponent:eachPath];
-				
+
 				NSBundle *bundle = [NSBundle bundleWithPath:eachPath];
 				BPlugin *plugin = [[BPlugin alloc] initWithBundle:bundle];
-				
+
 				if (!plugin) {
 					BLogWarning(([NSString stringWithFormat:@"failed to create plugin for path: %@", eachPath]));
 				} else {
@@ -162,11 +162,11 @@
 	for (BPlugin *eachPlugin in [self plugins]) {
 		[self registerExtensionsFor:eachPlugin];
     }
-		
+
 	NSSortDescriptor *sortByProcessOrder = [[NSSortDescriptor alloc] initWithKey:@"processOrder" ascending:YES];
 	NSSortDescriptor *sortByPluginDiscoveryOrder = [[NSSortDescriptor alloc] initWithKey:@"plugin.discoveryOrder" ascending:YES];
 	NSArray *extensionsSortDescriptors = [NSArray arrayWithObjects:sortByProcessOrder, sortByPluginDiscoveryOrder, nil];
-	
+
 	for (NSString *eachExtensionPointID in [extensionPointIDsToExtensions keyEnumerator]) {
 		[[extensionPointIDsToExtensions objectForKey:eachExtensionPointID] sortUsingDescriptors:extensionsSortDescriptors];
 	}
@@ -179,11 +179,11 @@
 - (void)registerPlugin:(BPlugin *)plugin {
 	BLogAssert([[plugin identifier] isEqualToString:[[plugin bundle] bundleIdentifier]], @"plugin identifer %@ does not equal bundle identifier %@", [plugin identifier], [[plugin bundle] bundleIdentifier]);
 //	BLogAssert([[plugin version] isEqualToString:[[plugin bundle] version]], @"plugin version %@ does not equal bundle CFBundleVersion %@", [plugin version], [[plugin bundle] version]);
-	
+
     if ([pluginIDsToPlugins objectForKey:[plugin identifier]] != nil) {
 		BLogWarning([NSString stringWithFormat:@"plugin id %@ not unique, replacing old with new", [plugin identifier]]);
     }
-	
+
 	[plugins addObject:plugin];
     [pluginIDsToPlugins setObject:plugin forKey:[plugin identifier]];
 
@@ -208,7 +208,7 @@
 		if (![self extensionPointFor:eachExtensionPointUniqueIdentifier]) {
 			BLogWarning([NSString stringWithFormat:@"no extension point found for extension %@ declared by plugin %@, so that extension will never be loaded.", eachExtensionPointUniqueIdentifier, [plugin identifier]]);
 		}
-		
+
 		NSMutableArray *pointExtensions = [extensionPointIDsToExtensions objectForKey:eachExtensionPointUniqueIdentifier];
 		if (!pointExtensions) {
 			pointExtensions = [NSMutableArray array];
@@ -222,21 +222,21 @@
 	NSMutableArray *pluginSearchPaths = [NSMutableArray array];
 	NSString *applicationSupportSubpath = [NSString stringWithFormat:@"Application Support/%@/PlugIns", [[NSProcessInfo processInfo] processName]];
 	NSEnumerator *searchPathEnumerator = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSAllDomainsMask - NSSystemDomainMask, YES) objectEnumerator];
-	
+
 	for (NSString *eachSearchPath in searchPathEnumerator) {
 		NSString *eachPluginPath = [eachSearchPath stringByAppendingPathComponent:applicationSupportSubpath];
 		if (![pluginSearchPaths containsObject:eachPluginPath]) {
 			[pluginSearchPaths addObject:eachPluginPath];
 		}
 	}
-	
+
 	for (NSBundle *eachBundle in [NSBundle allBundles]) {
 		NSString *eachPluginPath = [eachBundle builtInPlugInsPath];
 		if (![pluginSearchPaths containsObject:eachPluginPath]) {
 			[pluginSearchPaths addObject:eachPluginPath];
 		}
 	}
-	
+
 	return pluginSearchPaths;
 }
 
@@ -244,23 +244,23 @@
 	NSError *error = nil;
 	NSBundle *blocksBundle = [NSBundle bundleForClass:[self class]];
 	NSString *blocksSDEFPath = [blocksBundle pathForResource:@"BlocksDefault" ofType:@"sdef"];
-	
+
 	BLogInfo(@"Will parse sdef %@", blocksSDEFPath);
-	
+
 	NSXMLDocument *mergedOSAScriptingDefinition = [[NSXMLDocument alloc] initWithContentsOfURL:[NSURL fileURLWithPath:blocksSDEFPath] options:0 error:&error];
 
 	BLogAssert(mergedOSAScriptingDefinition != nil, [NSString stringWithFormat:@"mergedOSAScriptingDefinition failed to load with error %@", error]);
-	
+
 	NSXMLElement *mergedOSAScriptingDefinitionRoot = [mergedOSAScriptingDefinition rootElement];
-	
+
 	[[NSProcessInfo processInfo] processName];
-	
+
 	for (BPlugin *eachPlugin in [[BExtensionRegistry sharedInstance] plugins]) {
 		NSDictionary *infoDictionary = [eachPlugin.bundle infoDictionary];
-		
+
 		if ([[infoDictionary objectForKey:@"NSAppleScriptEnabled"] isEqualToString:@"YES"]) {
 			NSString *osaScriptingDefinitionName = [infoDictionary objectForKey:@"OSAScriptingDefinition"];
-			
+
 			if (eachPlugin.bundle == [NSBundle mainBundle]) {
 				BLogAssert([osaScriptingDefinitionName isEqualToString:@"dynamic"], @"main bundle of NSAppleScriptEnabled blocks apps should have OSAScriptingDefinition set to dynamic so that plugin sdefs will be found.");
 			} else {
@@ -269,7 +269,7 @@
 					BLogInfo(@"Will parse sdef %@", osaScriptingDefinitionPath);
 
 					NSXMLDocument *eachOSAScriptingDefinition = [[NSXMLDocument alloc] initWithContentsOfURL:[NSURL fileURLWithPath:osaScriptingDefinitionPath] options:0 error:&error];
-					
+
 					if (eachOSAScriptingDefinition) {
 						if ([eachPlugin loadAndReturnError:&error]) {
 							for (NSXMLElement *eachSuiteElement in [[eachOSAScriptingDefinition rootElement] elementsForName:@"suite"]) {
@@ -285,7 +285,7 @@
 			}
 		}
     }
-		
+
 	[replyEvent setDescriptor:[NSAppleEventDescriptor descriptorWithDescriptorType:typeUTF8Text data:[mergedOSAScriptingDefinition XMLData]] forKeyword:keyDirectObject];
 }
 

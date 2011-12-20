@@ -14,20 +14,20 @@
 
 // derived from http://rentzsch.com/trac/wiki/JRSwizzle
 + (BOOL)replaceMethod:(SEL)originalSelelector withMethod:(SEL)replacementSelector {
-	Method originalMethod = class_getInstanceMethod(self, originalSelelector);	
+	Method originalMethod = class_getInstanceMethod(self, originalSelelector);
 	if (originalMethod == NULL) {
 		BLogError(@"original method %@ not found for class %@", NSStringFromSelector(originalSelelector), [self className]);
 		return NO;
 	}
-	
+
 	Method replacementMethod = class_getInstanceMethod(self, replacementSelector);
 	if (replacementMethod == NULL) {
 		BLogError(@"original method %@ not found for class %@", NSStringFromSelector(replacementSelector), [self className]);
 		return NO;
 	}
-	
+
 	class_addMethod(self, originalSelelector, class_getMethodImplementation(self, originalSelelector), method_getTypeEncoding(originalMethod));
-	class_addMethod(self, replacementSelector, class_getMethodImplementation(self, replacementSelector), method_getTypeEncoding(replacementMethod));	
+	class_addMethod(self, replacementSelector, class_getMethodImplementation(self, replacementSelector), method_getTypeEncoding(replacementMethod));
 	method_exchangeImplementations(class_getInstanceMethod(self, originalSelelector), class_getInstanceMethod(self, replacementSelector));
 	return YES;
 }
@@ -56,9 +56,9 @@ static char BlocksKVONotificationHelperMagicContext;
 	if(self = [self init]) {
 		observer = anObserver;
 		selector = aSelector;
-		userInfo = aUserInfo;		
+		userInfo = aUserInfo;
 		target = aTarget;
-		keyPath = aKeyPath;		
+		keyPath = aKeyPath;
 		[target addObserver:self forKeyPath:aKeyPath options:options context:&BlocksKVONotificationHelperMagicContext];
 	}
 	return self;
@@ -157,15 +157,15 @@ static char BlocksKVONotificationHelperMagicContext;
 			if (!allowedColorPickers) {
 				allowedColorPickers = [NSArray arrayWithObjects:@"NSColorPickerWheel", @"NSColorPickerUser", @"NSColorPickerSliders", @"NSColorPickerPageableNameList", @"NSColorPickerCrayon", nil];
 			}
-			
+
 			for (NSString *each in allowedColorPickers) {
 				if ([fullPath rangeOfString:each].location != NSNotFound) {
 					return [self Blocks_initWithPath:fullPath];
 				}
 			}
-			
+
 			BLogInfo([NSString stringWithFormat:@"Skipping loading of unknown bundles %@", fullPath]);
-			
+
 			return nil;
 		}
 	}

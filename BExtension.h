@@ -31,7 +31,7 @@
 @property(readonly) BPlugin *plugin;
 @property(readonly) NSString *label;
 @property(readonly) NSString *extensionPointUniqueIdentifier;
-	
+
 #pragma mark Configuration Elements
 
 @property(readonly) NSArray *configurationElements;

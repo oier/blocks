@@ -43,5 +43,5 @@
 @property(readonly) NSArray *extensions;
 - (NSArray *)extensionsFor:(NSString *)extensionPointID;
 - (NSArray *)configurationElementsFor:(NSString *)extensionPointID;
-	
+
 @end
