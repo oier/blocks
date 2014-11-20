@@ -39,9 +39,9 @@
 
 - (BOOL)loadAndReturnError:(NSError **)error {
 	NSString *errorDescription = nil;
-	
+
 	id requiredBundle = [self requiredBundle];
-	
+
 	if (!requiredBundle) {
 		errorDescription = [NSString stringWithFormat:BLocalizedString(@"The \"%@\" plugin could not be loaded because its \"%@\" requirement could not be found.", nil), plugin.label, [requiredBundleIdentifier pathExtension]];
 	} else {
@@ -52,12 +52,12 @@
 			errorDescription = [NSString stringWithFormat:BLocalizedString(@"The \"%@\" plugin could not be loaded because it requires version %@ of \"%@\", but only version %@ is availible.", nil), plugin.label, version, [requiredBundle label], [requiredBundle version]];
 		}
 	}
-	
+
 	if (errorDescription && error != NULL) {
-		*error = [NSError errorWithDomain:@"BlocksErrorDomain" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:errorDescription, NSLocalizedDescriptionKey, nil]];		
+		*error = [NSError errorWithDomain:@"BlocksErrorDomain" code:0 userInfo:[NSDictionary dictionaryWithObjectsAndKeys:errorDescription, NSLocalizedDescriptionKey, nil]];
 		return NO;
 	}
-	
+
 	if ([requiredBundle loadAndReturnError:error]) {
 		return YES;
 	} else {

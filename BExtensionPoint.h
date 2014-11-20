@@ -12,7 +12,7 @@
 @class BPlugin;
 
 /*
- * An extension point declared in a plug-in. Except for the list of extensions plugged in to it, 
+ * An extension point declared in a plug-in. Except for the list of extensions plugged in to it,
  * the information available for an extension point is obtained from the declaring plug-in's manifest (Plugin.xml) file.
  */
 @interface BExtensionPoint : NSObject {

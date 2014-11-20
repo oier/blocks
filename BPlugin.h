@@ -28,11 +28,11 @@
 #pragma mark Class Methods
 
 + (BPlugin *)pluginForClass:(Class)aClass;
-							 
+
 #pragma mark Init
 
 - (id)initWithBundle:(NSBundle *)aBundle;
-	
+
 #pragma mark Properties
 
 @property(readonly) NSBundle *bundle;
@@ -44,7 +44,7 @@
 @property(readonly) NSArray *extensions;
 @property(readonly) NSString *documentation;
 @property(readonly) NSArray *headerFilePaths;
-	
+
 #pragma mark Loading Bundle
 
 @property(readonly) BOOL isLoaded;
